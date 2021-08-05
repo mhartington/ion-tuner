@@ -1,25 +1,12 @@
 import { Injectable } from '@angular/core';
-import { BehaviorSubject, interval, Observable, Subscription } from 'rxjs';
+import { BehaviorSubject, interval, Subscription } from 'rxjs';
 import { takeWhile, tap } from 'rxjs/operators';
-// import {
-//   AnalyserNode,
-//   AudioContext,
-//   GainNode,
-//   IAnalyserNode,
-//   IAudioContext,
-//   IGainNode,
-//   IMediaStreamAudioSourceNode,
-// } from 'standardized-audio-context';
 import { Note, TunerResponseMessage } from './interfaces';
 
 @Injectable({
   providedIn: 'root',
 })
 export class AudioProcesssorService {
-  // private audioContext: IAudioContext;
-  // private analyser: IAnalyserNode<IAudioContext>;
-  // private gainNode: IGainNode<IAudioContext>;
-  // private mic: IMediaStreamAudioSourceNode<IAudioContext> | null = null;
 
   private audioContext: AudioContext;
   private analyser: AnalyserNode;
@@ -87,6 +74,7 @@ export class AudioProcesssorService {
     this.mic = this.audioContext.createMediaStreamSource(stream);
     this.mic.connect(this.analyser);
 
+    // TODO: add mixing/monitoring feature
     //For mixing back to the main output
     // this.mic.connect(this.gainNode);
     // this.audioContext.destination.channelCount = 1
