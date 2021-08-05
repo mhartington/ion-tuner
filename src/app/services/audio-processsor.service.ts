@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { BehaviorSubject, interval } from 'rxjs';
+import { BehaviorSubject, interval, Observable, Subscription } from 'rxjs';
 import { takeWhile, tap } from 'rxjs/operators';
 // import {
 //   AnalyserNode,
@@ -37,8 +37,8 @@ export class AudioProcesssorService {
   };
   private noteSub$ = new BehaviorSubject<Note>(this.emptyNote);
   public note$ = this.noteSub$.asObservable();
-  RAFID: number;
   stream: MediaStream;
+  RAFID: Subscription;
 
   constructor() {
     this.worker = new Worker(new URL('./tuner.worker', import.meta.url));
@@ -92,21 +92,20 @@ export class AudioProcesssorService {
     // this.audioContext.destination.channelCount = 1
     // this.gainNode.connect(this.audioContext.destination)
 
-    this.RAFID = requestAnimationFrame(this.updatePitch.bind(this));
+    this.RAFID = interval(300).pipe(
+      tap(() => this.updatePitch()),
+      takeWhile(() => this.sendingAudioData)
+    ).subscribe()
   }
 
   updatePitch() {
-    if (this.sendingAudioData) {
-      this.RAFID = requestAnimationFrame(this.updatePitch.bind(this));
-    }
     const buffer = new Uint8Array(this.analyser.frequencyBinCount);
     this.analyser.getByteTimeDomainData(buffer);
     this.worker.postMessage({ buffer, sampleRate: this.audioContext.sampleRate, });
   }
   async killMic() {
     // Stop the loop
-    cancelAnimationFrame(this.RAFID);
-    this.RAFID = null;
+    this.RAFID.unsubscribe();
 
     // Disconnect the nodes
     this.analyser.disconnect();
