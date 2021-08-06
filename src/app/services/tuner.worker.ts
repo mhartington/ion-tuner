@@ -1,5 +1,4 @@
 /// <reference lib="webworker" />
-
 import { TunerRequestMessage, TunerResponse } from './interfaces';
 
 const middleA = 440;
@@ -91,7 +90,5 @@ addEventListener('message', ({ data }: TunerRequestMessage) => {
       cents
     };
   }
-
   postMessage(response);
 });
-

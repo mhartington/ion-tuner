@@ -68,7 +68,6 @@ export class AudioProcesssorService {
     this.sendingAudioData = true;
     this.handleNewStream(this.stream);
   }
-
   handleNewStream(stream: MediaStream) {
     // For analyzing the audio stream
     this.mic = this.audioContext.createMediaStreamSource(stream);
@@ -85,7 +84,6 @@ export class AudioProcesssorService {
       takeWhile(() => this.sendingAudioData)
     ).subscribe()
   }
-
   updatePitch() {
     const buffer = new Uint8Array(this.analyser.frequencyBinCount);
     this.analyser.getByteTimeDomainData(buffer);
